@@ -1,6 +1,7 @@
 package com.survivingcodingbootcamp.blog.controller;
 
 import com.survivingcodingbootcamp.blog.repository.TopicRepository;
+import com.survivingcodingbootcamp.blog.repository.TopicStorage;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class TopicController {
     }
     @GetMapping("/{id}")
     public String displaySingleTopic(@PathVariable long id, Model model) {
-        model.addAttribute("topic", topicRepo.findById(id).get());
+        model.addAttribute("topic", topicRepo.findById(id));
         return "single-topic-template";
     }
 }
