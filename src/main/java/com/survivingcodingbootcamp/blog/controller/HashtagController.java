@@ -3,32 +3,29 @@ package com.survivingcodingbootcamp.blog.controller;
 import com.survivingcodingbootcamp.blog.model.Hashtag;
 import com.survivingcodingbootcamp.blog.model.Post;
 import com.survivingcodingbootcamp.blog.repository.HashtagRepository;
-import com.survivingcodingbootcamp.blog.repository.HashtagStorage;
-import com.survivingcodingbootcamp.blog.repository.PostStorage;
+import com.survivingcodingbootcamp.blog.repository.PostRepository;
+import com.survivingcodingbootcamp.blog.repository.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping
+@RequestMapping("/hashtags")
 public class HashtagController {
-    private HashtagStorage hashtagStorage;
-    private PostStorage postStorage;
+    private HashtagRepository hashtagRepo;
+    private PostRepository postRepo;
+    private TopicRepository topicRepo;
     @Autowired
-    public HashtagController(HashtagStorage hashtagStorage, PostStorage postStorage){
-        this.hashtagStorage = hashtagStorage;
-        this.postStorage = postStorage;
+    public HashtagController(HashtagRepository hashtagRepo , PostRepository postRepo, TopicRepository topicRepo ){
+        this.hashtagRepo = hashtagRepo;
+        this.postRepo = postRepo;
+        this.topicRepo = topicRepo;
     }
     @GetMapping("/{id}")
     public  String displayingSingleHashtag(@PathVariable Long id, Model model){
-        model.addAttribute("hashtag", hashtagStorage.findById(id));
+        model.addAttribute("hashtag", hashtagRepo.findById(id).get());
         return "single-hashtag-template";
-    }
-    @GetMapping("")
-    public  String displayingAllHashtag( Model model){
-        model.addAttribute("hashtags", hashtagStorage.retrieveAllHashtags());
-        return "all-hashtags-template";
     }
 
     @PostMapping("/add/{id}")
@@ -36,18 +33,22 @@ public class HashtagController {
         if(hashtag.charAt(0) != '#'){
             hashtag = "#" + hashtag;
         }
-        Post postToGiveHashtag = postStorage.retrievePostById(id);
-        Hashtag createdHashtag = hashtagStorage.createOrRetrieveHashtag(hashtag);
-        if (!createdHashtag.getPosts().contains(postToGiveHashtag)){
-            createdHashtag.addPost(postToGiveHashtag);
-            hashtagStorage.save(createdHashtag);
-            postToGiveHashtag.addHashtag(createdHashtag);
-            postStorage.save(postToGiveHashtag);
-        }
+//        Post postToGiveHashtag = postRepo.retrievePostById(id);
+//        Hashtag createdHashtag = hashtagStorage.createOrRetrieveHashtag(hashtag);
+//        if (!createdHashtag.getPosts().contains(postToGiveHashtag)){
+//            createdHashtag.addPost(postToGiveHashtag);
+//            hashtagRepo.save(createdHashtag);
+//            postToGiveHashtag.addHashtag(createdHashtag);
+//            postRepo.save(postToGiveHashtag);
+//        }
 
         return "redirect:/posts/" + id;
     }
-
+ @GetMapping("")
+    public String allHashtag(Model model){
+        model.addAttribute("hashtags",hashtagRepo.findAll());
+        return "all-hashtags-template";
+ }
 
 
 }
